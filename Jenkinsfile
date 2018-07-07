@@ -22,9 +22,14 @@ node {
         def contport = container.port(8000)
         println app.id + " container is running at host port, " + contport
 
+
+        def ip = hostIp(container)
+
+        println "container run on ip :" + ip
+
         app.inside {
            sh "sleep 10"
-           sh "curl -f http://192.168.99.100:8000"
+           sh "curl -f http://${ip}:8000"
         }
         /*
         * def resp = sh(returnStdout: true,
@@ -49,12 +54,19 @@ node {
          * Pushing multiple tags is cheap, as all the layers are reused. */
 
          app.inside {
-             sh 'echo "Push image on registry"'
+             sh 'echo "Push image latest on registry"'
          }
 
         docker.withRegistry('https://registry.hub.docker.com', 'DockerhubCredentials') {
-            app.push("${env.BUILD_NUMBER}")
+            /*
+            * app.push("${env.BUILD_NUMBER}")
+            */
             app.push("latest")
         }
     }
+}
+
+def hostIp(container) {
+  sh "docker inspect -f {{.NetworkSettings.IPAddress}} ${container.id} > host.ip"
+  readFile('host.ip').trim()
 }
