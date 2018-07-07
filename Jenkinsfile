@@ -24,7 +24,7 @@ node {
         println app.id + " container is running at host port, " + contport
 
         app.inside {
-           sh "sleep 10000"
+           sh "sleep 10"
            sh "curl -f http://\"${contport}\""
         }
 
