@@ -30,12 +30,10 @@ node {
         println app.id + " container is running at host port, " + contport
         def resp = sh(returnStdout: true,
                       script: """
-                      set +x
-                      curl -w "%{http_code}" -o /dev/null -s \
-                      http://\"${contport}\"
+                      curl -w "%{http_code}" -o /dev/null -s http://\"${contport}\"
                       """
                       ).trim()
-                      
+
     }
 
     stage('Push image') {
