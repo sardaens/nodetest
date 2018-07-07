@@ -18,29 +18,30 @@ node {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-        /*
-        * app.inside {
-        *     sh "sleep 10000"
-        *     sh "curl -f http://127.0.0.1:8000"
-        * }
-        */
 
         def container = app.run('-p 8000')
         def contport = container.port(8000)
         println app.id + " container is running at host port, " + contport
-        def resp = sh(returnStdout: true,
-                      script: """
-                      curl --connect-timeout 60 -w "%{http_code}" -o /dev/null -s http://\"${contport}\"
-                      """
-                      ).trim()
-        if ( resp == "200" ) {
-            println " hello world is alive and kicking!"
-            currentBuild.result = "SUCCESS"
-        } else {
-            println "Humans are mortals."
-            currentBuild.result = "FAILURE"
+
+        app.inside {
+           sh "sleep 10000"
+           sh "curl -f http://\"${contport}\""
         }
 
+        /*
+        * def resp = sh(returnStdout: true,
+        *              script: """
+        *              curl --connect-timeout 60 -w "%{http_code}" -o /dev/null -s http://\"${contport}\"
+        *              """
+        *              ).trim()
+        * if ( resp == "200" ) {
+        *    println " hello world is alive and kicking!"
+        *    currentBuild.result = "SUCCESS"
+        * } else {
+        *    println "Humans are mortals."
+        *    currentBuild.result = "FAILURE"
+        * }
+        */
     }
 
     stage('Push image') {
