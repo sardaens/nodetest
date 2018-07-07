@@ -30,9 +30,16 @@ node {
         println app.id + " container is running at host port, " + contport
         def resp = sh(returnStdout: true,
                       script: """
-                      curl -w "%{http_code}" -o /dev/null -s http://\"${contport}\"
+                      curl --connect-timeout 60 -w "%{http_code}" -o /dev/null -s http://\"${contport}\"
                       """
                       ).trim()
+        if ( resp == "200" ) {
+            println " hello world is alive and kicking!"
+            currentBuild.result = "SUCCESS"
+        } else {
+            println "Humans are mortals."
+            currentBuild.result = "FAILURE"
+        }
 
     }
 
