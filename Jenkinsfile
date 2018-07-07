@@ -18,10 +18,10 @@ node {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-        def container = app.run('-p 8000')
+        def container = app.run('-p 8000:8000')
         def contport = container.port(8000)
         println app.id + " container is running at host port, " + contport
-        
+
         app.inside {
            sh "sleep 10"
            sh "curl -f http://192.168.99.100:8000"
